@@ -1,6 +1,6 @@
 # [![IOPA](http://iopa.io/iopa.png)](http://iopa.io)<br> iopa-ssdp
 
-[![Build Status](https://api.shippable.com/projects/TBD/badge?branchName=master)](https://app.shippable.com/projects/TBD) 
+[![Build Status](https://api.shippable.com/projects/5617152e1895ca44741b53b1/badge?branchName=master)](https://app.shippable.com/projects/5617152e1895ca44741b53b1) 
 [![IOPA](https://img.shields.io/badge/iopa-middleware-99cc33.svg?style=flat-square)](http://iopa.io)
 [![limerun](https://img.shields.io/badge/limerun-certified-3399cc.svg?style=flat-square)](https://nodei.co/npm/limerun/)
 
@@ -10,7 +10,7 @@
 `iopa-ssdp` is an API-First fabric for Simple Service Discovery Protocol (SSDP) for the Internet of Things (IoT) 
 and for Microservices Container-Based Architectures (MCBA) based on the Internet of Protocols Alliance (IOPA) specification 
 
-It servers SSDP messages in standard IOPA format and allows existing middleware for Connect, Express and limerun projects to consume/send each mesage.
+It servers SSDP messages in standard IOPA format 
 
 Written in native javascript for maximum performance and portability to constrained devices and services, using
 native HTTP parser and formatter in [`iopa-http`](https://nodei.co/npm/iopa-http/) 
@@ -28,7 +28,7 @@ Includes:
   * Works over UDP and other IOPA transports
   * Optimized pure javascript parser with no expensive callouts to C
   * Provides Alive, Bye, Notify and Search-Responses
-  * Enables Universal Plug and Play discovery (uPNP) mechanisms
+  * Enables Universal Plug and Play discovery (uPNP) mechanisms 
   
 ### Client Functions
   * SSDP 1.03 formatter
