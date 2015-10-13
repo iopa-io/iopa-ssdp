@@ -155,24 +155,24 @@ IopaSsdp.prototype._invokeOnResponse = function IopaSsdp_invokeOnResponse(contex
 // PRIVATE METHODS
 
 IopaSsdp.prototype._alive = function (channelContext, values) {
- return channelContext.create()
+  return channelContext.create() 
     .setHeader('NTS', SSDP.NOTIFY_TYPES.ALIVE)
     .fn(IopaSsdp_addNotifyHeaders)
-    .endAsync();
+    .complete()
 };
 
 IopaSsdp.prototype._bye = function (channelContext, values) {
   return channelContext.create()
     .setHeader('NTS', SSDP.NOTIFY_TYPES.BYE)
     .fn(IopaSsdp_addNotifyHeaders)
-    .endAsync();
+    .complete()
 };
 
 IopaSsdp.prototype._update = function (channelContext, values) {
     return channelContext.create()
     .setHeader('NTS', SSDP.NOTIFY_TYPES.UPDATE)
     .fn(IopaSsdp_addNotifyHeaders)
-    .endAsync();
+    .complete()
 };
 
 function IopaSsdp_addNotifyHeaders(context) {
@@ -223,7 +223,7 @@ function IopaSsdp_respond(originalContext, values) {
   context.setHeader('EXT', "");
   context.setHeader('Cache-Control', SSDP.MAX_AGE);
   iopa.util.shallow.mergeContext(context, values);
-  return context.end();
+  return context.complete();
  };
  
  module.exports = IopaSsdp;
