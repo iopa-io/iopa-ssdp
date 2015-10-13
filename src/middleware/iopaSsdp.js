@@ -18,6 +18,7 @@ global.Promise = require('bluebird');
 
 const iopa = require('iopa'),
   iopaHttp = require('iopa-http'),
+  iopaStream = require('iopa-common-stream'),
   iopaHttp_inboundParseMonitor = iopaHttp.protocol.inboundParseMonitor,
   iopaHttp_outboundWrite = iopaHttp.protocol.outboundWrite;
   
@@ -65,6 +66,7 @@ IopaSsdp.prototype.channel = function IopaSsdp_channel(channelContext, next) {
     channelContext[IOPA.Events].on(IOPA.EVENTS.Request, function(context){
        context[IOPA.MessageId]  = context[IOPA.MessageId] || context.getHeader('S');
         return next.invoke(context);
+        // evaluate context.using(next.invoke) here instead 
     })
     
     channelContext[IOPA.Events].on(IOPA.EVENTS.Response, function(context){
@@ -85,7 +87,7 @@ IopaSsdp.prototype.channel = function IopaSsdp_channel(channelContext, next) {
  */
 IopaSsdp.prototype.invoke = function IopaHttp_invoke(context, next) {
     context[SERVER.Capabilities][SSDP.CAPABILITY].respond = IopaSsdp_respond.bind(this, context);
-    context.response[IOPA.Body].once("finish", function(){ context.response[SERVER.Dispatch]; });
+    context.response[IOPA.Body].once("finish", context.response.dispatch);
     
     return next()
 }
@@ -113,7 +115,9 @@ IopaSsdp.prototype.connect = function IopaSsdp_connect(channelContext, next) {
  * @param next the next IOPA AppFunc in pipeline 
  */
 IopaSsdp.prototype.create = function IopaSsdp_create(context) {
-
+    context[IOPA.Body] = new iopaStream.OutgoingStream();
+    context[IOPA.Body].once("finish", context.dispatch); 
+  
     return context;
 };
 
@@ -125,6 +129,7 @@ IopaSsdp.prototype.create = function IopaSsdp_create(context) {
  * @param next the next IOPA AppFunc in pipeline 
  */
 IopaSsdp.prototype.dispatch = function IopaSsdp_dispatch(context, next) {
+  console.log("DISPTACH");
      context[IOPA.Events].on(IOPA.EVENTS.Response, this._invokeOnResponse.bind(this, context));
   
      return next().then(function () {
@@ -153,21 +158,21 @@ IopaSsdp.prototype._alive = function (channelContext, values) {
  return channelContext.create()
     .setHeader('NTS', SSDP.NOTIFY_TYPES.ALIVE)
     .fn(IopaSsdp_addNotifyHeaders)
-    .dispatch(true);
+    .endAsync();
 };
 
 IopaSsdp.prototype._bye = function (channelContext, values) {
   return channelContext.create()
     .setHeader('NTS', SSDP.NOTIFY_TYPES.BYE)
     .fn(IopaSsdp_addNotifyHeaders)
-    .dispatch(true);
+    .endAsync();
 };
 
 IopaSsdp.prototype._update = function (channelContext, values) {
     return channelContext.create()
     .setHeader('NTS', SSDP.NOTIFY_TYPES.UPDATE)
     .fn(IopaSsdp_addNotifyHeaders)
-    .dispatch(true);
+    .endAsync();
 };
 
 function IopaSsdp_addNotifyHeaders(context) {
@@ -218,7 +223,7 @@ function IopaSsdp_respond(originalContext, values) {
   context.setHeader('EXT', "");
   context.setHeader('Cache-Control', SSDP.MAX_AGE);
   iopa.util.shallow.mergeContext(context, values);
-  return context.dispatch(true);
+  return context.end();
  };
  
  module.exports = IopaSsdp;
